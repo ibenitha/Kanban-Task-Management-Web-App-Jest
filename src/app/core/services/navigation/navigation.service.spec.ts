@@ -17,6 +17,8 @@ describe('NavigationService', () => {
         provideRouter([
           { path: 'a', component: BlankComponent },
           { path: 'b', component: BlankComponent },
+          // TESTING LAB: a lazy route whose code fails to download, to test the error path.
+          { path: 'broken', loadComponent: () => Promise.reject(new Error('Chunk failed')) },
         ]),
       ],
     });
@@ -38,6 +40,25 @@ describe('NavigationService', () => {
     await harness.navigateByUrl('/a');
     await harness.navigateByUrl('/b');
     expect(service.isNavigating).toBe(false);
+    expect(service.navigationError).toBeNull();
+  });
+
+  it('shows a friendly error and logs once when a page fails to load', async () => {
+    const consoleSpy = jest.spyOn(console, 'error').mockImplementation();
+
+    await expect(harness.navigateByUrl('/broken')).rejects.toThrow('Chunk failed');
+
+    expect(service.isNavigating).toBe(false);
+    expect(service.navigationError).toContain('Something went wrong');
+    expect(consoleSpy).toHaveBeenCalledTimes(1);
+  });
+
+  it('clears the error on the next navigation', async () => {
+    jest.spyOn(console, 'error').mockImplementation();
+    await harness.navigateByUrl('/broken').catch(() => undefined);
+
+    await harness.navigateByUrl('/a');
+
     expect(service.navigationError).toBeNull();
   });
 });

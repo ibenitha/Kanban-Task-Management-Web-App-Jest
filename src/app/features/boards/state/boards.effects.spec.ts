@@ -153,7 +153,11 @@ describe('BoardsEffects', () => {
 
   it('deleteBoard$ deletes the board tasks first, then the board', async () => {
     const store = TestBed.inject(MockStore);
-    store.overrideSelector(selectAllTasks, [task, { ...task, id: 2 }, { ...task, id: 3, boardId: 2 }]);
+    store.overrideSelector(selectAllTasks, [
+      task,
+      { ...task, id: 2 },
+      { ...task, id: 3, boardId: 2 },
+    ]);
     store.refreshState();
     taskService['deleteTask'].mockReturnValue(of(undefined));
     boardService['deleteBoard'].mockReturnValue(of(undefined));
@@ -192,5 +196,110 @@ describe('BoardsEffects', () => {
     await firstValueFrom(effects.notifyOnFailure$);
 
     expect(errorSpy).toHaveBeenCalledWith('That task no longer exists.');
+  });
+
+  // TESTING LAB: every write has a failure path. When the (mocked) service
+  // errors, the effect must turn it into a Failure action instead of crashing.
+  describe('failure paths', () => {
+    const serverDown = () => throwError(() => 'The server is unreachable.');
+    const error = 'The server is unreachable.';
+
+    it('addBoard$ dispatches addBoardSuccess with the board from the API', async () => {
+      boardService['createBoard'].mockReturnValue(of(board));
+
+      actions$.next(BoardsActions.addBoard({ name: 'Board', description: '' }));
+
+      expect(await firstValueFrom(effects.addBoard$)).toEqual(
+        BoardsActions.addBoardSuccess({ board }),
+      );
+      expect(boardService['createBoard']).toHaveBeenCalledWith('Board', '');
+    });
+
+    it('addBoard$ dispatches addBoardFailure on error', async () => {
+      boardService['createBoard'].mockReturnValue(serverDown());
+      actions$.next(BoardsActions.addBoard({ name: 'Board', description: '' }));
+      expect(await firstValueFrom(effects.addBoard$)).toEqual(
+        BoardsActions.addBoardFailure({ error }),
+      );
+    });
+
+    it('updateTask$ dispatches updateTaskFailure on error', async () => {
+      taskService['updateTask'].mockReturnValue(serverDown());
+      actions$.next(BoardsActions.updateTask({ task }));
+      expect(await firstValueFrom(effects.updateTask$)).toEqual(
+        BoardsActions.updateTaskFailure({ error }),
+      );
+    });
+
+    it('deleteTask$ dispatches deleteTaskFailure on error', async () => {
+      taskService['deleteTask'].mockReturnValue(serverDown());
+      actions$.next(BoardsActions.deleteTask({ boardId: 1, taskId: 1 }));
+      expect(await firstValueFrom(effects.deleteTask$)).toEqual(
+        BoardsActions.deleteTaskFailure({ error }),
+      );
+    });
+
+    it('deleteBoard$ does not delete the board if deleting a task fails', async () => {
+      const store = TestBed.inject(MockStore);
+      store.overrideSelector(selectAllTasks, [task]);
+      store.refreshState();
+      taskService['deleteTask'].mockReturnValue(serverDown());
+
+      actions$.next(BoardsActions.deleteBoard({ boardId: 1 }));
+
+      expect(await firstValueFrom(effects.deleteBoard$)).toEqual(
+        BoardsActions.deleteBoardFailure({ error }),
+      );
+      expect(boardService['deleteBoard']).not.toHaveBeenCalled();
+    });
+
+    it('deleteBoard$ deletes an empty board straight away', async () => {
+      const store = TestBed.inject(MockStore);
+      store.overrideSelector(selectAllTasks, []);
+      store.refreshState();
+      boardService['deleteBoard'].mockReturnValue(of(undefined));
+
+      actions$.next(BoardsActions.deleteBoard({ boardId: 1 }));
+
+      expect(await firstValueFrom(effects.deleteBoard$)).toEqual(
+        BoardsActions.deleteBoardSuccess({ boardId: 1 }),
+      );
+      expect(taskService['deleteTask']).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('navigation and notifications', () => {
+    it('navigateAfterAddTask$ goes back to the board overview', async () => {
+      const navigateSpy = jest.spyOn(router, 'navigate').mockResolvedValue(true);
+      actions$.next(BoardsActions.addTaskSuccess({ task }));
+      await firstValueFrom(effects.navigateAfterAddTask$);
+      expect(navigateSpy).toHaveBeenCalledWith(['/boards', 1, 'overview']);
+    });
+
+    it('navigateAfterDeleteTask$ goes back to the board overview', async () => {
+      const navigateSpy = jest.spyOn(router, 'navigate').mockResolvedValue(true);
+      actions$.next(BoardsActions.deleteTaskSuccess({ boardId: 1, taskId: 1 }));
+      await firstValueFrom(effects.navigateAfterDeleteTask$);
+      expect(navigateSpy).toHaveBeenCalledWith(['/boards', 1, 'overview']);
+    });
+
+    it.each([
+      [BoardsActions.addBoardSuccess({ board }), 'Board created.'],
+      [BoardsActions.deleteBoardSuccess({ boardId: 1 }), 'Board deleted.'],
+      [BoardsActions.addTaskSuccess({ task }), 'Task added.'],
+      [BoardsActions.deleteTaskSuccess({ boardId: 1, taskId: 1 }), 'Task deleted.'],
+    ])('notifyOnSuccess$ shows the right message for %s', async (action, message) => {
+      const successSpy = jest.spyOn(notifications, 'success').mockImplementation();
+      actions$.next(action);
+      await firstValueFrom(effects.notifyOnSuccess$);
+      expect(successSpy).toHaveBeenCalledWith(message);
+    });
+
+    it('clearErrorToastOnLoad$ clears an old error once data loads successfully', async () => {
+      const clearSpy = jest.spyOn(notifications, 'clear');
+      actions$.next(BoardsActions.loadBoardDataSuccess({ boards: [board], tasks: [task] }));
+      await firstValueFrom(effects.clearErrorToastOnLoad$);
+      expect(clearSpy).toHaveBeenCalled();
+    });
   });
 });
