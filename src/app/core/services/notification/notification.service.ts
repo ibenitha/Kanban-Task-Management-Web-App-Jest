@@ -37,24 +37,40 @@ export class NotificationService {
   readonly notification$ =
     this.notificationSubject.asObservable();
 
-  // Publish a success notification to all current subscribers.
+  // TESTING LAB: success toasts close themselves after this many milliseconds.
+  // Errors stay until the user dismisses them, so they are never missed.
+  static readonly AUTO_DISMISS_MS = 4000;
+
+  private dismissTimer: ReturnType<typeof setTimeout> | null = null;
+
+  // Publish a success notification, then hide it automatically.
   success(message: string): void {
-    this.notificationSubject.next({
-      type: 'success',
-      message,
-    });
+    this.show({ type: 'success', message });
+    this.dismissTimer = setTimeout(() => this.clear(), NotificationService.AUTO_DISMISS_MS);
   }
 
-  // Publish an error notification to all current subscribers.
+  // Publish an error notification (stays until dismissed).
   error(message: string): void {
-    this.notificationSubject.next({
-      type: 'error',
-      message,
-    });
+    this.show({ type: 'error', message });
   }
 
   // Publish null to remove the current notification.
   clear(): void {
+    this.cancelTimer();
     this.notificationSubject.next(null);
+  }
+
+  // A new notification cancels the previous timer, so an old timer can't
+  // close a newer message early.
+  private show(notification: AppNotification): void {
+    this.cancelTimer();
+    this.notificationSubject.next(notification);
+  }
+
+  private cancelTimer(): void {
+    if (this.dismissTimer) {
+      clearTimeout(this.dismissTimer);
+      this.dismissTimer = null;
+    }
   }
 }
