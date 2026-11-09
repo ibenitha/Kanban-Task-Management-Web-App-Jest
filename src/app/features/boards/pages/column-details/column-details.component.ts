@@ -9,6 +9,7 @@ import { Task } from '../../../../core/models/task.model';
 import { findColumn } from '../../../../core/constants/kanban-columns';
 import * as BoardsActions from '../../state/boards.actions';
 import * as BoardsSelectors from '../../state/boards.selectors';
+import { DueLabelPipe } from '../../../../shared/pipes/due-label.pipe';
 
 // /boards/:boardId/columns/:columnId — a focused, single-column view.
 // :boardId is inherited from the parent route; :columnId is this route's
@@ -16,7 +17,7 @@ import * as BoardsSelectors from '../../state/boards.selectors';
 @Component({
   selector: 'app-column-details',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, DueLabelPipe], // TESTING LAB: dueLabel pipe
   templateUrl: './column-details.component.html',
   styleUrl: './column-details.component.css',
 })

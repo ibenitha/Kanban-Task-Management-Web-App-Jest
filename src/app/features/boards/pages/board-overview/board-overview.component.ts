@@ -9,6 +9,7 @@ import { Task } from '../../../../core/models/task.model';
 import { KANBAN_COLUMNS } from '../../../../core/constants/kanban-columns';
 import * as BoardsActions from '../../state/boards.actions';
 import * as BoardsSelectors from '../../state/boards.selectors';
+import { DueLabelPipe } from '../../../../shared/pipes/due-label.pipe';
 
 // Default child of a board: /boards/:boardId/overview. :boardId isn't part
 // of this route's own path — it's inherited from the parent (see
@@ -18,7 +19,7 @@ import * as BoardsSelectors from '../../state/boards.selectors';
 @Component({
   selector: 'app-board-overview',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, DueLabelPipe], // TESTING LAB: dueLabel pipe
   templateUrl: './board-overview.component.html',
   styleUrl: './board-overview.component.css',
 })

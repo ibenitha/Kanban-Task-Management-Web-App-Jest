@@ -31,7 +31,7 @@
             <span class="badge" [ngClass]="'badge--' + task.priority"
               >{{ task.priority }}</span
             >
-            <span class="task-card__due" *ngIf="task.dueDate">Due {{ task.dueDate | date: 'MMM d' }}</span>
+            <span class="task-card__due" *ngIf="task.dueDate">{{ task.dueDate | dueLabel: task.status === 'completed' }}</span>
           </span>
 
           <span class="task-card__tags" *ngIf="task.tags.length">
