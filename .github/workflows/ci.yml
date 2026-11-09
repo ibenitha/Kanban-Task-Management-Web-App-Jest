@@ -1,0 +1,24 @@
+# TESTING LAB: runs the whole test suite with coverage on every push and pull request.
+# If a test fails or coverage drops below the thresholds in jest.config.js, the check
+# goes red, so broken code is caught before it is merged or deployed.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-and-build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - run: npm ci
+      - run: npm run test:coverage -- --ci
+      - run: npm run build

@@ -27,8 +27,8 @@ module.exports = {
   coverageDirectory: 'coverage',
   coverageReporters: ['text-summary', 'text', 'html'],
 
-  // Minimum coverage — `npm run test:coverage` fails if the suite drops below these.
+  // Minimum coverage — `npm run test:coverage` (and CI) fails if any total drops below these.
   coverageThreshold: {
-    global: { statements: 90, branches: 80, functions: 90, lines: 90 },
+    global: { statements: 95, branches: 90, functions: 95, lines: 95 },
   },
 };
