@@ -11,6 +11,7 @@ search and filter your boards.
 - Create and delete boards; add, edit and delete tasks (with confirmation before deleting)
 - Data loaded and saved through a REST API with Angular `HttpClient`
 - Loading indicators, friendly error messages and a Retry button when the API is unreachable
+- Friendly due dates ("Due today", "Overdue · Sep 9") and success messages that close on their own
 - App state managed with NgRx (actions, reducers, selectors, effects)
 - Lazy-loaded boards feature, route guards and unsaved-changes protection
 - Responsive layout and accessible markup (see below)
@@ -21,8 +22,8 @@ search and filter your boards.
 - NgRx (store, effects, devtools)
 - RxJS
 - json-server (local REST API) and angular-in-memory-web-api (production)
-- Vitest for unit and integration tests
-- Netlify for hosting
+- Jest with jest-preset-angular for unit, integration and snapshot tests
+- GitHub Actions (CI) and Netlify (hosting)
 
 ## Getting started
 
@@ -51,6 +52,8 @@ npm start
 | `npm start` | Start the development server |
 | `npm run api` | Start the json-server REST API |
 | `npm test` | Run all tests once |
+| `npm run test:watch` | Re-run tests automatically when files change |
+| `npm run test:coverage` | Run tests and create a coverage report |
 | `npm run build` | Production build into `dist/` |
 
 ## API
@@ -88,11 +91,13 @@ src/
     │   ├── services/      BoardService, TaskService, auth, navigation, notifications
     │   ├── guards/        Auth and unsaved-changes guards
     │   └── models/        Board and Task interfaces
+    ├── shared/            Reusable ToastComponent and dueLabel pipe
     ├── pages/             Login, settings, not-found
     └── features/boards/   Lazy-loaded boards feature
         ├── state/         NgRx actions, reducer, selectors, effects
         └── pages/         Board list, board details, overview, column, task, add task
 mock-api/                  Seed data for the REST API
+jest.config.js             Test runner configuration and coverage thresholds
 ```
 
 ## Accessibility
@@ -113,12 +118,55 @@ mock-api/                  Seed data for the REST API
 
 ## Testing
 
+Tests use **Jest** with **jest-preset-angular**, which runs Angular's `TestBed` in a simulated
+browser (jsdom). No server or browser needs to be running.
+
 ```bash
-npm test
+npm test                # run all tests once
+npm run test:watch      # re-run on every change while you work
+npm run test:coverage   # run tests and create a coverage report
 ```
 
-21 test files and 113 tests: services (with `HttpTestingController`), NgRx reducer, selectors and
-effects, components, guards, and routing integration tests. No server needs to be running.
+### Coverage
+
+`npm run test:coverage` prints a summary in the terminal and writes a full report to
+`coverage/index.html`; open it in a browser to see which lines are covered.
+
+| Statements | Branches | Functions | Lines |
+|---|---|---|---|
+| 99% | 95% | 99% | 99% |
+
+The minimum allowed is set in `jest.config.js` (95% statements, functions and lines; 90% branches).
+If coverage drops below that, the command fails.
+
+### What is tested
+
+| Type | What it checks | Examples |
+|---|---|---|
+| Component | Rendering, `@Input`/`@Output`, forms and buttons, loading/error states | `board-list`, `task-details`, `add-task`, `toast` |
+| Component with mocks | Store, Router and `window.confirm` replaced by Jest mocks and spies | `board-list.component.spec.ts` |
+| Service | HTTP method, URL and body with `HttpTestingController`; error messages | `board.service`, `task.service`, `http-error` |
+| Pipe | Valid dates, edge cases (empty, null, invalid) and predictable output | `due-label.pipe.spec.ts` |
+| Async | Timers with Jest fake timers; Observables and Promises with `async/await` | `notification.service.spec.ts` |
+| NgRx | Reducer, selectors, and effects (success, failure and cache paths) | `boards.*.spec.ts` |
+| Integration | Real Store, effects and components together, with only HTTP faked | `boards.integration.spec.ts`, `app.routes.spec.ts` |
+| Snapshot | Rendered HTML compared with a saved copy to catch unexpected UI changes | `toast`, `board-overview` |
+
+### Conventions
+
+- Each test file sits next to the file it tests and is named `<name>.spec.ts`.
+- Feature-wide integration tests are named `<feature>.integration.spec.ts`.
+- `describe` names the unit under test; each `it` describes one behaviour in plain English.
+- Tests check what the user sees and does (text, buttons, form fields), not private details.
+- Each test is arranged, acted on and asserted in that order, with mocks reset between tests.
+- New features come with tests in the same commit, ideally written first.
+- Snapshots live in `__snapshots__/`; after an intended UI change, update them with `npx jest -u`.
+
+### Continuous integration
+
+GitHub Actions (`.github/workflows/ci.yml`) runs the tests with coverage and the production build on
+every push and pull request. A failing test or low coverage marks the commit red before it is
+deployed.
 
 ## Deployment
 
