@@ -42,4 +42,11 @@ describe('BoardOverviewComponent', () => {
     expect(tasksByColumn['completed'].map((t) => t.id)).toEqual([2]);
     expect(tasksByColumn['todo'].every((t) => t.boardId === 1)).toBe(true);
   });
+
+  // TESTING LAB (bonus): snapshot test. The first run saves the rendered HTML in
+  // __snapshots__/; later runs fail if the markup changes unexpectedly. After an
+  // intended UI change, update it with: npx jest -u
+  it('matches the saved snapshot of the Kanban board', () => {
+    expect(fixture.nativeElement).toMatchSnapshot();
+  });
 });

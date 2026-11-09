@@ -1,0 +1,45 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`ToastComponent matches the saved snapshot (error toast) 1`] = `
+<div>
+  <div
+    class="toast toast--error"
+    role="alert"
+  >
+    <span
+      class="toast__message"
+    >
+      Snapshot message
+    </span>
+    <button
+      aria-label="Dismiss notification"
+      class="toast__dismiss"
+      type="button"
+    >
+       × 
+    </button>
+  </div>
+</div>
+`;
+
+exports[`ToastComponent matches the saved snapshot (success toast) 1`] = `
+<div>
+  <div
+    class="toast toast--success"
+    role="status"
+  >
+    <span
+      class="toast__message"
+    >
+      Snapshot message
+    </span>
+    <button
+      aria-label="Dismiss notification"
+      class="toast__dismiss"
+      type="button"
+    >
+       × 
+    </button>
+  </div>
+</div>
+`;

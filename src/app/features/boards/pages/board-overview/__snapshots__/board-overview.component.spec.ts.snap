@@ -1,0 +1,195 @@
+// Jest Snapshot v1, https://jestjs.io/docs/snapshot-testing
+
+exports[`BoardOverviewComponent matches the saved snapshot of the Kanban board 1`] = `
+<div>
+  <div
+    class="board-overview-toolbar"
+  >
+    <h2
+      class="visually-hidden"
+    >
+      Kanban board
+    </h2>
+    <a
+      class="btn btn--primary"
+      href="/boards/1/new-task"
+    >
+      + Add task
+    </a>
+  </div>
+  <div
+    class="kanban"
+  >
+    <section
+      aria-label="To Do column"
+      class="kanban-column"
+    >
+      <header
+        class="kanban-column__head"
+      >
+        <h3>
+          To Do
+        </h3>
+        <span
+          class="kanban-column__count"
+        >
+          1
+        </span>
+      </header>
+      <ul
+        class="task-list"
+      >
+        <li>
+          <a
+            class="task-card"
+            href="/boards/1/tasks/1"
+          >
+            <span
+              class="task-card__title"
+            >
+              Todo task
+            </span>
+            <span
+              class="task-card__meta"
+            >
+              <span
+                class="badge badge--low"
+              >
+                low
+              </span>
+              
+            </span>
+            
+            <span
+              class="task-card__footer"
+            >
+              <span
+                class="task-card__assignee"
+                title="Assigned to "
+              >
+                
+              </span>
+            </span>
+          </a>
+        </li>
+        
+        
+      </ul>
+    </section>
+    <section
+      aria-label="In Progress column"
+      class="kanban-column"
+    >
+      <header
+        class="kanban-column__head"
+      >
+        <h3>
+          In Progress
+        </h3>
+        <span
+          class="kanban-column__count"
+        >
+          0
+        </span>
+      </header>
+      <ul
+        class="task-list"
+      >
+        
+        <li
+          class="task-list__empty"
+        >
+          No tasks here yet.
+        </li>
+        
+      </ul>
+    </section>
+    <section
+      aria-label="Review column"
+      class="kanban-column"
+    >
+      <header
+        class="kanban-column__head"
+      >
+        <h3>
+          Review
+        </h3>
+        <span
+          class="kanban-column__count"
+        >
+          0
+        </span>
+      </header>
+      <ul
+        class="task-list"
+      >
+        
+        <li
+          class="task-list__empty"
+        >
+          No tasks here yet.
+        </li>
+        
+      </ul>
+    </section>
+    <section
+      aria-label="Completed column"
+      class="kanban-column"
+    >
+      <header
+        class="kanban-column__head"
+      >
+        <h3>
+          Completed
+        </h3>
+        <span
+          class="kanban-column__count"
+        >
+          1
+        </span>
+      </header>
+      <ul
+        class="task-list"
+      >
+        <li>
+          <a
+            class="task-card"
+            href="/boards/1/tasks/2"
+          >
+            <span
+              class="task-card__title"
+            >
+              Done task
+            </span>
+            <span
+              class="task-card__meta"
+            >
+              <span
+                class="badge badge--low"
+              >
+                low
+              </span>
+              
+            </span>
+            
+            <span
+              class="task-card__footer"
+            >
+              <span
+                class="task-card__assignee"
+                title="Assigned to "
+              >
+                
+              </span>
+            </span>
+          </a>
+        </li>
+        
+        
+      </ul>
+    </section>
+    
+  </div>
+  
+</div>
+`;

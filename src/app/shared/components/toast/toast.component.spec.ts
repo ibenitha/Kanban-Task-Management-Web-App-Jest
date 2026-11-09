@@ -59,4 +59,10 @@ describe('ToastComponent', () => {
       'Dismiss notification',
     );
   });
+
+  // TESTING LAB (bonus): snapshot tests catch unintended markup changes.
+  it.each(['success', 'error'] as const)('matches the saved snapshot (%s toast)', (type) => {
+    show(type, 'Snapshot message');
+    expect(fixture.nativeElement).toMatchSnapshot();
+  });
 });
