@@ -32,7 +32,7 @@ describe('AddTaskComponent', () => {
   });
 
   it('refuses to submit an empty title', () => {
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+    const dispatchSpy = jest.spyOn(store, 'dispatch');
     fixture.componentInstance.submit();
 
     expect(fixture.componentInstance.titleInvalid).toBe(true);
@@ -40,7 +40,7 @@ describe('AddTaskComponent', () => {
   });
 
   it('dispatches addTask with the trimmed, parsed draft', () => {
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+    const dispatchSpy = jest.spyOn(store, 'dispatch');
     const component = fixture.componentInstance;
     component.draft.title = '  New task  ';
     component.draft.tags = 'design, ux ,  ';

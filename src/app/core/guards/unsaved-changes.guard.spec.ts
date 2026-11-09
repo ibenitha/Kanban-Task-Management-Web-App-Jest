@@ -8,16 +8,16 @@ describe('unsavedChangesGuard', () => {
     );
 
   it('allows navigation without prompting when there are no unsaved changes', () => {
-    const confirmSpy = vi.spyOn(window, 'confirm');
+    const confirmSpy = jest.spyOn(window, 'confirm');
     expect(runGuard({ hasUnsavedChanges: () => false })).toBe(true);
     expect(confirmSpy).not.toHaveBeenCalled();
   });
 
   it('prompts and respects the answer when there are unsaved changes', () => {
-    vi.spyOn(window, 'confirm').mockReturnValueOnce(false);
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(false);
     expect(runGuard({ hasUnsavedChanges: () => true })).toBe(false);
 
-    vi.spyOn(window, 'confirm').mockReturnValueOnce(true);
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(true);
     expect(runGuard({ hasUnsavedChanges: () => true })).toBe(true);
   });
 });

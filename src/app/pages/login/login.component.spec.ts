@@ -54,7 +54,7 @@ describe('LoginComponent', () => {
     const fixture = await createWith('/settings');
     const authService = TestBed.inject(AuthService);
     const router = TestBed.inject(Router);
-    const navigateSpy = vi.spyOn(router, 'navigateByUrl');
+    const navigateSpy = jest.spyOn(router, 'navigateByUrl');
 
     fixture.componentInstance.login();
 

@@ -8,8 +8,8 @@ import { AuthService } from './core/services/auth/auth.service';
 import { InMemoryDataService } from './core/api/in-memory-data.service';
 
 // The HTTP requests are answered asynchronously by the in-memory web API
-// (registered below), and this zoneless test environment can't detect
-// that pending work — so wait real time, then force a change detection.
+// (registered below) after a short timer, so wait real time, then force a
+// change detection before checking the page.
 async function waitForBoardData(harness: RouterTestingHarness): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 1000));
   harness.fixture.detectChanges();
@@ -52,7 +52,7 @@ describe('Application routing', () => {
 
   afterEach(() => {
     sessionStorage.clear();
-    vi.restoreAllMocks();
+    jest.restoreAllMocks();
   });
 
   it('1. redirects / to /boards', async () => {
@@ -145,7 +145,7 @@ describe('Application routing', () => {
     await harness.navigateByUrl('/boards/1/tasks/1');
     await waitForBoardData(harness); // let the task actually load before checking the guard
 
-    const confirmSpy = vi.spyOn(window, 'confirm');
+    const confirmSpy = jest.spyOn(window, 'confirm');
     await harness.navigateByUrl('/boards/1/overview');
 
     expect(confirmSpy).not.toHaveBeenCalled();
@@ -162,12 +162,12 @@ describe('Application routing', () => {
     await harness.fixture.whenStable();
 
     // Cancel the confirm dialog: navigation must be blocked, still on the task.
-    vi.spyOn(window, 'confirm').mockReturnValueOnce(false);
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(false);
     await harness.navigateByUrl('/boards/1/overview');
     expect(router.url).toBe('/boards/1/tasks/1');
 
     // Accept the confirm dialog: navigation now proceeds.
-    vi.spyOn(window, 'confirm').mockReturnValueOnce(true);
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(true);
     await harness.navigateByUrl('/boards/1/overview');
     expect(router.url).toBe('/boards/1/overview');
   });

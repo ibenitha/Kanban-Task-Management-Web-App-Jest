@@ -43,7 +43,7 @@ describe('BoardListComponent', () => {
   });
 
   it('dispatches loadBoardData on init', () => {
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+    const dispatchSpy = jest.spyOn(store, 'dispatch');
     fixture.componentInstance.ngOnInit();
     expect(dispatchSpy).toHaveBeenCalledWith(BoardsActions.loadBoardData());
   });

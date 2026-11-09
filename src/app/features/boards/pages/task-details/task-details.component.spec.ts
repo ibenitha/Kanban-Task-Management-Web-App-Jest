@@ -67,7 +67,7 @@ describe('TaskDetailsComponent', () => {
 
   it('dispatches updateTask with the full task on save, and only marks the draft saved once updateTaskSuccess arrives', () => {
     const component = fixture.componentInstance;
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+    const dispatchSpy = jest.spyOn(store, 'dispatch');
     component.draft.title = 'Renamed';
 
     component.save();
@@ -91,7 +91,7 @@ describe('TaskDetailsComponent', () => {
 
   it('refuses to save an empty title', () => {
     const component = fixture.componentInstance;
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+    const dispatchSpy = jest.spyOn(store, 'dispatch');
     component.draft.title = '   ';
 
     component.save();
@@ -102,8 +102,8 @@ describe('TaskDetailsComponent', () => {
 
   it('deletes the task after confirmation and treats the draft as saved so the guard does not double-prompt', () => {
     const component = fixture.componentInstance;
-    vi.spyOn(window, 'confirm').mockReturnValueOnce(true);
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(true);
+    const dispatchSpy = jest.spyOn(store, 'dispatch');
     component.draft.title = 'Unsaved edit';
 
     component.deleteTask();
@@ -116,8 +116,8 @@ describe('TaskDetailsComponent', () => {
 
   it('does not dispatch deleteTask when the user cancels the confirmation', () => {
     const component = fixture.componentInstance;
-    vi.spyOn(window, 'confirm').mockReturnValueOnce(false);
-    const dispatchSpy = vi.spyOn(store, 'dispatch');
+    jest.spyOn(window, 'confirm').mockReturnValueOnce(false);
+    const dispatchSpy = jest.spyOn(store, 'dispatch');
 
     component.deleteTask();
 
@@ -145,7 +145,7 @@ describe('TaskDetailsComponent', () => {
     }).compileComponents();
 
     const router = TestBed.inject(Router);
-    const navigateSpy = vi.spyOn(router, 'navigate');
+    const navigateSpy = jest.spyOn(router, 'navigate');
     const missingFixture = TestBed.createComponent(TaskDetailsComponent);
     missingFixture.detectChanges();
 

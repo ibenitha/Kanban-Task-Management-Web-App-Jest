@@ -58,7 +58,7 @@ describe('ColumnDetailsComponent', () => {
     }).compileComponents();
 
     const router = TestBed.inject(Router);
-    const navigateSpy = vi.spyOn(router, 'navigate');
+    const navigateSpy = jest.spyOn(router, 'navigate');
 
     const fixture = TestBed.createComponent(ColumnDetailsComponent);
     fixture.detectChanges(); // triggers ngOnInit -> the redirect

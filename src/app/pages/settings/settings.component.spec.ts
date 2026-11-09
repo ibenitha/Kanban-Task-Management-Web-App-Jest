@@ -26,7 +26,7 @@ describe('SettingsComponent', () => {
     const authService = TestBed.inject(AuthService);
     const router = TestBed.inject(Router);
     authService.login();
-    const navigateSpy = vi.spyOn(router, 'navigate');
+    const navigateSpy = jest.spyOn(router, 'navigate');
 
     fixture.componentInstance.logout();
 

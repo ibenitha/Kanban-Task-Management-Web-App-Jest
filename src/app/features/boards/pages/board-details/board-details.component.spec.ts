@@ -58,7 +58,7 @@ describe('BoardDetailsComponent', () => {
   it('does not redirect to /not-found while still loading', async () => {
     await createWith({ ...initialBoardsState, boards: [], loading: true });
     const router = TestBed.inject(Router);
-    const navigateSpy = vi.spyOn(router, 'navigate');
+    const navigateSpy = jest.spyOn(router, 'navigate');
     fixture.detectChanges();
     expect(navigateSpy).not.toHaveBeenCalled();
   });
@@ -66,7 +66,7 @@ describe('BoardDetailsComponent', () => {
   it('does not redirect to /not-found when the API request failed', async () => {
     await createWith({ ...initialBoardsState, boards: [], error: 'Server unreachable' });
     const router = TestBed.inject(Router);
-    const navigateSpy = vi.spyOn(router, 'navigate');
+    const navigateSpy = jest.spyOn(router, 'navigate');
     fixture.detectChanges();
     expect(navigateSpy).not.toHaveBeenCalled();
   });
@@ -74,7 +74,7 @@ describe('BoardDetailsComponent', () => {
   it('redirects to /not-found once data has loaded and the board truly does not exist', async () => {
     await createWith({ ...initialBoardsState, boards: [], loaded: true });
     const router = TestBed.inject(Router);
-    const navigateSpy = vi.spyOn(router, 'navigate');
+    const navigateSpy = jest.spyOn(router, 'navigate');
     fixture.detectChanges();
     expect(navigateSpy).toHaveBeenCalledWith(['/not-found']);
   });

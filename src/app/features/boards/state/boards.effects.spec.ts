@@ -34,7 +34,7 @@ const task: Task = {
   tags: [],
 };
 
-type Stub = Record<string, ReturnType<typeof vi.fn>>;
+type Stub = Record<string, ReturnType<typeof jest.fn>>;
 
 describe('BoardsEffects', () => {
   let actions$: ReplaySubject<unknown>;
@@ -49,12 +49,12 @@ describe('BoardsEffects', () => {
 
     // The HTTP services are stubbed: these tests check the Effects' logic,
     // while board.service.spec.ts / task.service.spec.ts test the HTTP calls.
-    boardService = { getBoards: vi.fn(), createBoard: vi.fn(), deleteBoard: vi.fn() };
+    boardService = { getBoards: jest.fn(), createBoard: jest.fn(), deleteBoard: jest.fn() };
     taskService = {
-      getTasks: vi.fn(),
-      createTask: vi.fn(),
-      updateTask: vi.fn(),
-      deleteTask: vi.fn(),
+      getTasks: jest.fn(),
+      createTask: jest.fn(),
+      updateTask: jest.fn(),
+      deleteTask: jest.fn(),
     };
 
     TestBed.configureTestingModule({
@@ -168,7 +168,7 @@ describe('BoardsEffects', () => {
   });
 
   it('navigateAfterAddBoard$ navigates to the new board without dispatching', async () => {
-    const navigateSpy = vi.spyOn(router, 'navigate');
+    const navigateSpy = jest.spyOn(router, 'navigate');
 
     actions$.next(BoardsActions.addBoardSuccess({ board }));
     await firstValueFrom(effects.navigateAfterAddBoard$);
@@ -177,7 +177,7 @@ describe('BoardsEffects', () => {
   });
 
   it('notifyOnSuccess$ tells the notification service about a successful mutation', async () => {
-    const successSpy = vi.spyOn(notifications, 'success');
+    const successSpy = jest.spyOn(notifications, 'success');
 
     actions$.next(BoardsActions.updateTaskSuccess({ task }));
     await firstValueFrom(effects.notifyOnSuccess$);
@@ -186,7 +186,7 @@ describe('BoardsEffects', () => {
   });
 
   it('notifyOnFailure$ tells the notification service about a failed mutation', async () => {
-    const errorSpy = vi.spyOn(notifications, 'error');
+    const errorSpy = jest.spyOn(notifications, 'error');
 
     actions$.next(BoardsActions.updateTaskFailure({ error: 'That task no longer exists.' }));
     await firstValueFrom(effects.notifyOnFailure$);
