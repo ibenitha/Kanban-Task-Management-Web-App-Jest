@@ -108,9 +108,7 @@ describe('TaskDetailsComponent', () => {
 
     component.deleteTask();
 
-    expect(dispatchSpy).toHaveBeenCalledWith(
-      BoardsActions.deleteTask({ boardId: 1, taskId: 1 }),
-    );
+    expect(dispatchSpy).toHaveBeenCalledWith(BoardsActions.deleteTask({ boardId: 1, taskId: 1 }));
     expect(component.hasUnsavedChanges()).toBe(false);
   });
 
@@ -150,5 +148,73 @@ describe('TaskDetailsComponent', () => {
     missingFixture.detectChanges();
 
     expect(navigateSpy).toHaveBeenCalledWith(['/not-found']);
+  });
+
+  // TESTING LAB: the same form, tested through the page the way a user uses it.
+  describe('edit form (template)', () => {
+    const page = () => fixture.nativeElement as HTMLElement;
+    const saveButton = () =>
+      Array.from(page().querySelectorAll('button')).find((b) =>
+        b.textContent?.includes('Save changes'),
+      ) as HTMLButtonElement;
+
+    async function typeTitle(value: string): Promise<void> {
+      const input = page().querySelector('#task-title') as HTMLInputElement;
+      input.value = value;
+      input.dispatchEvent(new Event('input'));
+      fixture.detectChanges();
+      await fixture.whenStable();
+    }
+
+    beforeEach(async () => {
+      await fixture.whenStable(); // let ngModel copy the task into the inputs
+      fixture.detectChanges();
+    });
+
+    it('fills the form with the task from the store', () => {
+      expect((page().querySelector('#task-title') as HTMLInputElement).value).toBe(
+        'Design homepage hero',
+      );
+      expect((page().querySelector('#task-priority') as HTMLSelectElement).value).toBe('high');
+    });
+
+    it('keeps Save disabled until the user changes something', async () => {
+      expect(saveButton().disabled).toBe(true);
+
+      await typeTitle('Design homepage hero v2');
+
+      expect(saveButton().disabled).toBe(false);
+      expect(page().textContent).toContain('Unsaved changes');
+    });
+
+    it('shows an accessible error and does not save when the title is cleared', async () => {
+      const dispatchSpy = jest.spyOn(store, 'dispatch');
+      await typeTitle('');
+
+      page().querySelector('form')!.dispatchEvent(new Event('submit'));
+      fixture.detectChanges();
+
+      const input = page().querySelector('#task-title')!;
+      expect(input.getAttribute('aria-invalid')).toBe('true');
+      expect(input.getAttribute('aria-describedby')).toBe('task-title-error');
+      expect(page().querySelector('#task-title-error')?.textContent).toContain('required');
+      expect(dispatchSpy).not.toHaveBeenCalledWith(
+        expect.objectContaining({ type: BoardsActions.updateTask.type }),
+      );
+    });
+
+    it('disables Save and Delete while a request is in progress', async () => {
+      await typeTitle('Changed');
+      store.setState({
+        [boardsFeatureKey]: { ...initialBoardsState, tasks: [task], saving: true },
+      });
+      fixture.detectChanges();
+
+      const deleteButton = Array.from(page().querySelectorAll('button')).find(
+        (b) => b.textContent?.trim() === 'Delete task',
+      )!;
+      expect(saveButton().disabled).toBe(true);
+      expect(deleteButton.disabled).toBe(true);
+    });
   });
 });
