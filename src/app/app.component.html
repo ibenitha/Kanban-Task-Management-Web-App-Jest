@@ -63,24 +63,13 @@
     </p>
 
     <!-- Service-based shared state on screen: whatever NotificationService's
-         BehaviorSubject last published, read here with the async pipe. -->
-    <div
-      class="toast"
+         BehaviorSubject last published, read here with the async pipe.
+         TESTING LAB: displayed by ToastComponent (@Input notification, @Output dismissed). -->
+    <app-toast
       *ngIf="notifications.notification$ | async as note"
-      [class.toast--success]="note.type === 'success'"
-      [class.toast--error]="note.type === 'error'"
-      role="status"
-    >
-      <span>{{ note.message }}</span>
-      <button
-        type="button"
-        class="toast__dismiss"
-        (click)="notifications.clear()"
-        aria-label="Dismiss notification"
-      >
-        &times;
-      </button>
-    </div>
+      [notification]="note"
+      (dismissed)="notifications.clear()"
+    ></app-toast>
 
     <router-outlet></router-outlet>
   </main>

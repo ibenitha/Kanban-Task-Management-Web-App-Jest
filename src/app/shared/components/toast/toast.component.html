@@ -1,0 +1,18 @@
+<!-- Errors use role="alert" so screen readers announce them immediately;
+     success messages use the politer role="status". -->
+<div
+  class="toast"
+  [class.toast--success]="notification.type === 'success'"
+  [class.toast--error]="notification.type === 'error'"
+  [attr.role]="notification.type === 'error' ? 'alert' : 'status'"
+>
+  <span class="toast__message">{{ notification.message }}</span>
+  <button
+    type="button"
+    class="toast__dismiss"
+    (click)="dismiss()"
+    aria-label="Dismiss notification"
+  >
+    &times;
+  </button>
+</div>

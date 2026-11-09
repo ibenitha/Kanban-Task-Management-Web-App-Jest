@@ -135,40 +135,6 @@
   font-weight: 500;
 }
 
-.toast {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-  border-radius: var(--radius-md);
-  padding: var(--space-3) var(--space-4);
-  margin-bottom: var(--space-4);
-  font-size: 0.875rem;
-  font-weight: 500;
-}
-
-.toast--success {
-  background: color-mix(in srgb, var(--status-completed) 10%, white);
-  color: var(--status-completed);
-  border: 1.5px solid color-mix(in srgb, var(--status-completed) 25%, transparent);
-}
-
-.toast--error {
-  background: var(--color-danger-soft);
-  color: var(--color-danger);
-  border: 1.5px solid color-mix(in srgb, var(--color-danger) 20%, transparent);
-}
-
-.toast__dismiss {
-  background: none;
-  border: none;
-  font-size: 1.1rem;
-  line-height: 1;
-  cursor: pointer;
-  color: inherit;
-  padding: 0 var(--space-1);
-}
-
 /* The sidebar becomes a horizontal top bar on narrow screens — navigation
    stays reachable without a slide-out drawer to manage. */
 @media (max-width: 768px) {
